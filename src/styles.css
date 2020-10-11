@@ -1,0 +1,48 @@
+.todr-brand-colour-text {
+    color: #30913f!important;
+}
+
+.todr-brand-colour-bg {
+    background-color: #30913f!important;
+}
+
+.todr-brand-colour-text-accent {
+    color: #73d182!important;
+}
+
+.todr-brand-colour-bg-accent {
+    background-color: #73d182!important;
+}
+
+.todr-navbar-top-accent {
+    border-top: 4px solid #73d182!important;
+}
+
+.todr-navbar-spacer {
+    padding-top: 60px;
+}
+
+.todr-subtle-shadow {
+    position: relative;
+}
+
+.todr-subtle-shadow::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: 0px 3px 9px rgba(0, 0, 0, 0.2);
+}
+
+.todr-todogroup-edit {
+    cursor: pointer;
+    color: rgb(116, 116, 116);
+}
+
+.todr-todogroup-edit:hover {
+    color: rgb(70, 70, 70);
+}
