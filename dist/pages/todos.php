@@ -1,51 +1,26 @@
 <?php
-require '../php/_connect.php';
+require __DIR__.'/../php/_connect.php';
+require __DIR__.'/../php/_auth.php';
 
 $userQuery;
-$verifyiedEmail;
-$userID;
 $todoGroups = [];
 $result;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (!$validLogon) {
     session_start();
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $_SESSION['loginMessage'] = "You did not provide valid login details.";
+    header("Location: ../index.php");
+    $connection->close();
+    exit;
+}
 
-    if (empty($email) || empty($password)) {
-        $_SESSION['loginMessage'] = "You somehow did not provide a valid email address or password... having fun messing around with the HTML, hmm?";
-        header("Location: ../index.php");
-        $connection->close();
-        exit;
-    } else {
-        $query = "SELECT id, email FROM t_users WHERE email = ? AND password = ?";
-        $userQuery = $connection->prepare($query);
+$query = "SELECT id, header, dateCreated FROM t_todogroup WHERE iduser = $userID";
 
-        $userQuery->bind_param("ss", $email, $password);
-        $userQuery->execute();
+$result = $connection->query($query);
 
-        $userQuery->bind_result($userID, $verifyiedEmail);
-        $userQuery->store_result();
-
-        if ($userQuery->num_rows < 1) {;
-            $_SESSION['loginMessage'] = "You did not provide valid login details.";
-            header("Location: ../index.php");
-            $connection->close();
-            $userQuery->close();
-            exit;
-        } else {
-            $userQuery->fetch();
-
-            $query = "SELECT id, header, dateCreated FROM t_todogroup WHERE iduser = $userID";
-
-            $result = $connection->query($query);
-
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    array_push($todoGroups, $row);
-                }
-            }
-        }
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        array_push($todoGroups, $row);
     }
 }
 ?>
@@ -77,8 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0" action="pages/index.php" method="POST">
-                <div class="mr-sm-3 mb-sm-0 mb-2 text-muted"><i class="fas fa-user"></i> <?= $verifyiedEmail ?></div>
+            <form class="form-inline my-2 my-lg-0" action="../php/logout.php" method="POST">
+                <div class="mr-sm-3 mb-sm-0 mb-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
                 <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
             </form>
         </div>

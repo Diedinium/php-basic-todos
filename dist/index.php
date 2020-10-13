@@ -1,4 +1,6 @@
 <?php
+require __DIR__.'/php/_auth.php';
+
 session_start();
 
 $message;
@@ -37,11 +39,18 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     <a class="nav-link" href="pages/about.php"><i class="fas fa-question"></i> About</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0" action="pages/login.php" method="POST">
-                <input class="form-control mr-sm-2 mb-sm-0 mb-2" type="email" name="email" required placeholder="Email" aria-label="Email">
-                <input class="form-control mr-sm-2" type="password" required name="password" placeholder="Password" aria-label="Password">
-                <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
-            </form>
+            <?php if ($validLogon && !empty($verifiedEmail)) : ?>
+                <form class="form-inline my-2 my-lg-0" action="php/logout.php" method="POST">
+                    <div class="mr-sm-3 mb-sm-0 mb-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
+                    <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
+                </form>
+            <?php else : ?>
+                <form class="form-inline my-2 my-lg-0" action="php/_auth.php" method="POST">
+                    <input class="form-control mr-sm-2 mb-sm-0 mb-2" type="email" name="email" required placeholder="Email" aria-label="Email">
+                    <input class="form-control mr-sm-2" type="password" required name="password" placeholder="Password" aria-label="Password">
+                    <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
+                </form>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -59,7 +68,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 <h1 class="display-4">Welcome to Todr!</h1>
                 <p>A basic Todo lister demonstration site written using PHP.</p>
             </div>
-            <p>Login to view your todos.</p>
+            <?php if ($validLogon && !empty($verifiedEmail)) : ?>
+                <div class="alert alert-success">You are logged in.</div>
+                <a href="pages/todos.php" class="btn btn-primary">Go to your Todos</a>
+            <?php else : ?>
+                <p>Login to view your todos.</p>
+            <?php endif; ?>
         </div>
     </main>
 
