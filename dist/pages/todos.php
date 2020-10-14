@@ -1,7 +1,6 @@
 <?php
-require __DIR__.'/../php/_connect.php';
-require __DIR__.'/../php/_auth.php';
-require __DIR__.'/../php/_connect.php';
+require __DIR__ . '/../php/_auth.php';
+require __DIR__ . '/../php/_connect.php';
 
 $userQuery;
 $todoGroups = [];
@@ -64,9 +63,10 @@ if ($result->num_rows > 0) {
         <div class="container">
             <div>
                 <div class="todr-subtle-shadow p-3 mt-3">
-                    <form action="../php/_addTodo.php" method="POST">
+                    <form action="../php/_addTodoGroup.php" method="POST">
                         <div class="input-group">
                             <input class="form-control" type="text" name="todoGroupHeader" required placeholder="Todo group title" aria-label="Email">
+                            <input type="hidden" name="userID" value="<?= $userID ?>">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit">Add Group</button>
                             </div>
@@ -92,8 +92,9 @@ if ($result->num_rows > 0) {
                             <div class="card-body">
                                 <h4 class="card-title">
                                     <span class="mr-auto"><?= $todoGroup['header'] ?></span>
-                                    <span onclick="alert('Not yet implemented')" class="float-right">
-                                        <i class="fas fa-edit todr-todogroup-edit"></i>
+                                    <span class="float-right">
+                                        <i onclick="alert('Not yet implemented')" class="fas fa-edit todr-todogroup-edit mr-2"></i>
+                                        <i onclick="alert('Not yet implemented')" class="fas fa-trash todr-todogroup-delete"></i>
                                     </span>
                                 </h4>
                                 <div>

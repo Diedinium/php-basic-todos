@@ -57,3 +57,12 @@
 .todr-todogroup-edit:hover {
     color: rgb(70, 70, 70);
 }
+
+.todr-todogroup-delete {
+    cursor: pointer;
+    color: rgb(194, 40, 40);
+}
+
+.todr-todogroup-delete:hover {
+    color: rgb(83, 14, 14);
+}
