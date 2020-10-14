@@ -1,15 +1,24 @@
 <?php
-require __DIR__.'/php/_auth.php';
+require __DIR__ . '/php/_auth.php';
 
 session_start();
 
 $message;
+$logoutSuccess;
+$logoutMessage;
 
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    if (!empty($_SESSION['loginMessage'])) {
-        $message = $_SESSION['loginMessage'];
-    }
+if (!empty($_SESSION['loginMessage'])) {
+    $message = $_SESSION['loginMessage'];
 }
+
+if (!empty($_SESSION['logoutSuccess'])) {
+    $logoutSuccess = $_SESSION['logoutSuccess'];
+}
+
+if (!empty($_SESSION['logoutMessage'])) {
+    $logoutMessage = $_SESSION['logoutMessage'];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 </li>
             </ul>
             <?php if ($validLogon && !empty($verifiedEmail)) : ?>
-                <form class="form-inline my-2 my-lg-0" action="php/logout.php" method="POST">
+                <form class="form-inline my-2 my-lg-0" action="php/_logout.php" method="POST">
                     <div class="mr-sm-3 mb-sm-0 mb-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
                     <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
                 </form>
@@ -64,6 +73,18 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 unset($_SESSION['loginMessage']);
             endif;
             ?>
+
+            <?php if (!empty($logoutMessage) && $logoutSuccess) : ?>
+                <div class="alert alert-success mt-3">
+                    <?= $logoutMessage ?>
+                </div>
+                <?php unset($_SESSION['logoutMessage']); ?>
+            <?php elseif (!empty($logoutMessage) && !$logoutSuccess) : ?>
+                <div class="alert alert-danger mt-3">
+                    <?= $logoutMessage ?>
+                </div>
+                <?php unset($_SESSION['logoutMessage']); ?>
+            <?php endif; ?>
             <div class="jumbotron mt-3 text-center">
                 <h1 class="display-4">Welcome to Todr!</h1>
                 <p>A basic Todo lister demonstration site written using PHP.</p>

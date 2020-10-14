@@ -78,6 +78,9 @@ else {
                 }
             }
         }
+
+        $userQuery->close();
+        $connection->close();
     }
 }
 ?>

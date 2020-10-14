@@ -1,6 +1,7 @@
 <?php
 require __DIR__.'/../php/_connect.php';
 require __DIR__.'/../php/_auth.php';
+require __DIR__.'/../php/_connect.php';
 
 $userQuery;
 $todoGroups = [];
@@ -52,7 +53,7 @@ if ($result->num_rows > 0) {
                     <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0" action="../php/logout.php" method="POST">
+            <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST">
                 <div class="mr-sm-3 mb-sm-0 mb-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
                 <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
             </form>
