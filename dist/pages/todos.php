@@ -23,6 +23,14 @@ if ($result->num_rows > 0) {
         array_push($todoGroups, $row);
     }
 }
+
+session_start();
+$errorMessage;
+
+if (!empty($_SESSION['todoAddError'])) {
+    $errorMessage = $_SESSION['todoAddError'];
+    unset($_SESSION['todoAddError']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +39,7 @@ if ($result->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todr - Login</title>
+    <title>Todr - Todos</title>
     <script src="../main.js"></script>
     <link rel="stylesheet" href="../main.css">
 </head>
@@ -61,6 +69,12 @@ if ($result->num_rows > 0) {
 
     <main class="todr-navbar-spacer">
         <div class="container">
+            <?php if (!empty($errorMessage)) : ?>
+                <div class="alert alert-danger mt-2">
+                    <?=$errorMessage?>
+                </div>
+            <?php endif; ?>
+
             <div>
                 <div class="todr-subtle-shadow p-3 mt-3">
                     <form action="../php/_addTodoGroup.php" method="POST">
@@ -112,7 +126,7 @@ if ($result->num_rows > 0) {
                                     <?php else : ?>
                                         <div class="alert alert-info">This todo group does not yet contain any todos.</div>
                                     <?php endif; ?>
-                                    <a href="#" class="btn btn-secondary"><i class="fas fa-plus-circle"></i> Add Todo</a>
+                                    <a href="#" class="btn btn-secondary" onclick="openModal(<?= $todoGroupID ?>)"><i class="fas fa-plus-circle"></i> Add Todo</a>
                                 </div>
                             </div>
                         </div>
@@ -121,6 +135,47 @@ if ($result->num_rows > 0) {
             </div>
         </div>
     </main>
+
+    <div class="modal" tabindex="-1" id="ModalAddTodo">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Todo</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form action="../php/_addTodo.php" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" value="" id="todoGroupID" name="todoGroupID">
+                        <div class="form-group">
+                            <label for="addTodoHeader">Header</label>
+                            <input type="text" id="addTodoHeader" name="addTodoHeader" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="addTodoDescription">Description (Optional)</label>
+                            <textarea id="addTodoDescription" name="addTodoDescription" cols="30" rows="3" class="form-control"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="addTodoDate">Due date (Optional)</label>
+                                <input type="date" id="addTodoDate" name="addTodoDate" class="form-control">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="addTodoTime">Due time (Optional)</label>
+                                <input type="time" id="addTodoTime" name="addTodoTime" class="form-control">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add todo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <hr />
@@ -134,6 +189,11 @@ if ($result->num_rows > 0) {
         $(function() {
             console.log("jQuery is working!");
         });
+
+        function openModal(id) {
+            $('#ModalAddTodo').modal('show');
+            $('#todoGroupID').val(id);
+        }
     </script>
 </body>
 
