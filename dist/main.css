@@ -66,3 +66,23 @@
 .todr-todogroup-delete:hover {
     color: rgb(83, 14, 14);
 }
+
+.todr-toast-container {
+    position: absolute;
+    top: 65px;
+    right: 10px;
+}
+
+.todr-error-toast {
+    border-color: #A22424;
+}
+
+.form-control.error:focus {
+    border-color: #A22424;
+    box-shadow: 0 0 0 0.2rem rgba(218, 46, 46, 0.25);
+}
+
+.form-control.valid:focus {
+    border-color: #50A224;
+    box-shadow: 0 0 0 0.2rem rgba(80, 162, 36, 0.25);
+}

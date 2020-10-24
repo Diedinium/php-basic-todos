@@ -54,7 +54,7 @@ if (!empty($_SESSION['logoutMessage'])) {
                     <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
                 </form>
             <?php else : ?>
-                <form class="form-inline my-2 my-lg-0" action="php/_auth.php" method="POST">
+                <form class="form-inline my-2 my-lg-0" action="php/_auth.php" method="POST" id="logonForm">
                     <input class="form-control mr-sm-2 mb-sm-0 mb-2" type="email" name="email" required placeholder="Email" aria-label="Email">
                     <input class="form-control mr-sm-2" type="password" required name="password" placeholder="Password" aria-label="Password">
                     <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
@@ -98,6 +98,8 @@ if (!empty($_SESSION['logoutMessage'])) {
         </div>
     </main>
 
+    <?php include_once __DIR__ . '/pages/partials/common.php' ?>
+
     <footer>
         <hr />
         <div class="container mb-3">
@@ -108,7 +110,20 @@ if (!empty($_SESSION['logoutMessage'])) {
 
     <script>
         $(function() {
-            console.log("jQuery is working!");
+            $('#logonForm').validate({
+                onkeyup: false,
+                onclick: false,
+                onfocusout: false,
+                showErrors: function(errorMap, errorList) {
+                    this.defaultShowErrors();
+                    displayErrorToast(errorMap, errorList);
+                },
+                errorPlacement: function(error, element) {}
+            });
+            
+            $('input, select').focusout(function() {
+                $(this).removeClass('error');
+            });
         });
     </script>
 </body>
