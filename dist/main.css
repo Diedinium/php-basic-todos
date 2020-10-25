@@ -67,6 +67,15 @@
     color: rgb(83, 14, 14);
 }
 
+.todr-todogroup-check {
+    color: rgb(104, 184, 114);
+}
+
+.todr-todogroup-check:hover {
+    cursor: pointer;
+    color: rgb(48, 102, 55);
+}
+
 .todr-toast-container {
     position: absolute;
     top: 65px;
@@ -77,6 +86,10 @@
     border-color: #A22424;
 }
 
+.todr-success-toast {
+    border-color: #50A224;
+}
+
 .form-control.error:focus {
     border-color: #A22424;
     box-shadow: 0 0 0 0.2rem rgba(218, 46, 46, 0.25);
@@ -85,4 +98,13 @@
 .form-control.valid:focus {
     border-color: #50A224;
     box-shadow: 0 0 0 0.2rem rgba(80, 162, 36, 0.25);
+}
+
+.todr-todogroup-actions {
+    min-width: 60px;
+    text-align: right;
+}
+
+.tooltip-inner {
+    max-width: 350px;
 }

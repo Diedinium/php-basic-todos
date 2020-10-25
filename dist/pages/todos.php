@@ -61,7 +61,7 @@ if (!empty($_SESSION['todoAddError'])) {
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST">
-                <div class="mr-sm-3 mb-sm-0 mb-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
+                <div class="mr-sm-3 mr-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
                 <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
             </form>
         </div>
@@ -71,15 +71,15 @@ if (!empty($_SESSION['todoAddError'])) {
         <div class="container">
             <?php if (!empty($errorMessage)) : ?>
                 <div class="alert alert-danger mt-2">
-                    <?=$errorMessage?>
+                    <?= $errorMessage ?>
                 </div>
             <?php endif; ?>
 
             <div>
                 <div class="todr-subtle-shadow p-3 mt-3">
-                    <form action="../php/_addTodoGroup.php" method="POST">
+                    <form action="../php/_addTodoGroup.php" method="POST" id="formAddTodoGroup">
                         <div class="input-group">
-                            <input class="form-control" type="text" name="todoGroupHeader" required placeholder="Todo group title" aria-label="Email">
+                            <input class="form-control" type="text" name="todoGroupHeader" required maxlength="255" placeholder="Todo group title">
                             <input type="hidden" name="userID" value="<?= $userID ?>">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="submit">Add Group</button>
@@ -103,22 +103,66 @@ if (!empty($_SESSION['todoAddError'])) {
                         }
                     ?>
                         <div class="card mt-2 todr-subtle-shadow bg-white">
-                            <div class="card-body">
-                                <h4 class="card-title">
+                            <div class="card-body p-3">
+                                <h4 class="card-title d-flex">
                                     <span class="mr-auto"><?= $todoGroup['header'] ?></span>
-                                    <span class="float-right">
-                                        <i onclick="alert('Not yet implemented')" class="fas fa-edit todr-todogroup-edit mr-2"></i>
-                                        <i onclick="alert('Not yet implemented')" class="fas fa-trash todr-todogroup-delete"></i>
+                                    <span class="todr-todogroup-actions">
+                                        <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo group" class="fas fa-edit fa-sm todr-todogroup-edit mr-2"></i>
+                                        <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Delete todo group" class="fas fa-trash fa-sm todr-todogroup-delete"></i>
                                     </span>
                                 </h4>
                                 <div>
                                     <?php if (count($todos) > 0) : ?>
                                         <ul class="list-group mb-3">
                                             <?php foreach ($todos as $todo) : ?>
-                                                <li class="list-group-item">
-                                                    <div>
-                                                        <p class="mb-1"><strong><?= $todo['header'] ?></strong></p>
-                                                        <p class="mb-0"><?= $todo['description'] ?></p>
+                                                <li class="list-group-item p-2">
+                                                    <div class="row no-gutters">
+                                                        <div class="col-9 col-md-11 pb-1">
+                                                            <?php if ($todo['complete'] == true) : ?>
+                                                                <strong><?= $todo['header'] ?> <span class="badge badge-success">Complete</span></strong>
+                                                            <?php else : ?>
+                                                                <strong><?= $todo['header'] ?> <span class="badge badge-warning">In Progress</span></strong>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <div class="col-3 col-md-1 text-right pb-1">
+                                                            <?php if ($todo['complete'] == true) : ?>
+                                                                <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Mark as incomplete" class="fas fa-times todr-todogroup-delete mr-2"></i>
+                                                            <?php else : ?>
+                                                                <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Mark as complete" class="fas fa-check todr-todogroup-check mr-2"></i>
+                                                            <?php endif; ?>
+                                                            <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo item" class="fas fa-edit todr-todogroup-edit mr-2"></i>
+                                                            <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Delete todo item" class="fas fa-trash todr-todogroup-delete"></i>
+                                                        </div>
+                                                        <div class="col-12 pb-1">
+                                                            <?= $todo['description'] ?>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="d-flex">
+                                                                <?php if (!empty($todo['dueDate'])) :
+                                                                    $dueDate = new DateTime($todo['dueDate']);
+                                                                    $createdDate = new DateTime($todo['createdDate']);
+                                                                    $now = new DateTime();
+                                                                    $isOverdue = $dueDate < $now;
+                                                                ?>
+                                                                    <span class="mr-auto">
+                                                                        <i class="fas fa-clock"></i>
+                                                                        <span class="text-muted">
+                                                                            <?= $dueDate->format('Y/m/d H:i a') ?>
+                                                                        </span>
+                                                                        <?php if ($isOverdue) : ?>
+                                                                            <span class="badge badge-danger">Overdue</span>
+                                                                        <?php endif; ?>
+                                                                    </span>
+                                                                    <span><i class="fas fa-info-circle todr-todogroup-edit" data-toggle="tooltip" data-placement="top" title="Created: <?= $createdDate->format('Y/m/d H:i a') ?>"></i></span>
+                                                                <?php else : ?>
+                                                                    <span class="mr-auto">
+                                                                        <i class="fas fa-clock"></i>
+                                                                        <span class="text-muted"> No due date</span>
+                                                                    </span>
+                                                                    <span><i class="fas fa-info-circle todr-todogroup-edit" data-toggle="tooltip" data-placement="top" title="Created: <?= $createdDate->format('Y/m/d H:i a') ?>"></i></span>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </li>
                                             <?php endforeach; ?>
@@ -126,7 +170,7 @@ if (!empty($_SESSION['todoAddError'])) {
                                     <?php else : ?>
                                         <div class="alert alert-info">This todo group does not yet contain any todos.</div>
                                     <?php endif; ?>
-                                    <a href="#" class="btn btn-secondary" onclick="openModal(<?= $todoGroupID ?>)"><i class="fas fa-plus-circle"></i> Add Todo</a>
+                                    <a href="#" class="btn btn-secondary" onclick="openAddTodoModal(<?= $todoGroupID ?>)"><i class="fas fa-plus-circle"></i> Add Todo</a>
                                 </div>
                             </div>
                         </div>
@@ -145,7 +189,7 @@ if (!empty($_SESSION['todoAddError'])) {
                         <span>&times;</span>
                     </button>
                 </div>
-                <form action="../php/_addTodo.php" method="POST">
+                <form action="../php/_addTodo.php" method="POST" id="formAddTodo">
                     <div class="modal-body">
                         <input type="hidden" value="" id="todoGroupID" name="todoGroupID">
                         <div class="form-group">
@@ -177,6 +221,8 @@ if (!empty($_SESSION['todoAddError'])) {
         </div>
     </div>
 
+    <?php include_once __DIR__ . '/partials/common.php' ?>
+
     <footer>
         <hr />
         <div class="container mb-3">
@@ -186,14 +232,61 @@ if (!empty($_SESSION['todoAddError'])) {
     </footer>
 
     <script>
-        $(function() {
-            console.log("jQuery is working!");
-        });
-
-        function openModal(id) {
+        function openAddTodoModal(id) {
             $('#ModalAddTodo').modal('show');
             $('#todoGroupID').val(id);
         }
+
+        $(function() {
+            $('#formAddTodoGroup').validate({
+                onkeyup: false,
+                onclick: false,
+                onfocusout: false,
+                rules: {
+                    todoGroupHeader: {
+                        required: true,
+                        noWhiteSpace: true
+                    }
+                },
+                showErrors: function(errorMap, errorList) {
+                    this.defaultShowErrors();
+                    displayErrorToast(errorMap, errorList);
+                },
+                errorPlacement: function(error, element) {}
+            });
+
+            $('#formAddTodo').validate({
+                onkeyup: false,
+                onclick: false,
+                onfocusout: false,
+                rules: {
+                    addTodoHeader: {
+                        required: true,
+                        noWhiteSpace: true
+                    },
+                    addTodoDescription: {
+                        noWhiteSpace: true
+                    },
+                    addTodoDate: {
+                        required: '#addTodoTime:filled'
+                    },
+                    addTodoTime: {
+                        required: '#addTodoDate:filled'
+                    }
+                },
+                showErrors: function(errorMap, errorList) {
+                    this.defaultShowErrors();
+                    displayErrorToast(errorMap, errorList);
+                },
+                errorPlacement: function(error, element) {}
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $('input, select').focusout(function() {
+                $(this).removeClass('error');
+            });
+        });
     </script>
 </body>
 

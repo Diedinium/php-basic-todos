@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $todoGroupHeader = $_POST['todoGroupHeader'];
     $todoGroupUserID = $_POST['userID'];
 
-    if (!empty($todoGroupHeader) && !empty($todoGroupUserID)) {
+    if (!empty(trim($todoGroupHeader)) && !empty($todoGroupUserID)) {
         if ($_POST['userID'] == $userID) {
 
             $insertQuery = $connection->prepare("INSERT INTO t_todogroup (iduser, header) VALUES(?,?)");

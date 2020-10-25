@@ -7,6 +7,5 @@ import './styles.css';
 
 window.jQuery = $;
 window.$ = $;
-window.validate = validate;
 
 require('./functions.js');
