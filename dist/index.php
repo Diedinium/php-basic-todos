@@ -77,7 +77,30 @@ $connection->close();
                 <h1 class="display-4">Welcome to Todr!</h1>
                 <p>A basic Todo lister demonstration site written using PHP.</p>
             </div>
-            <p>Login to view your todos.</p>
+
+            <div class="row">
+                <div class="col-md-6 col-12">
+                    <div class="card h-100 todr-brand-colour-border">
+                        <h4 class="card-header todr-brand-colour-text">
+                            Create an account
+                        </h4>
+                        <div class="card-body">
+                            <p>To start making todo lists, create an account using the button below.</p>
+                            <a href="pages/createAccount.php" class="btn todr-brand-colour-bg text-white">Create Account</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-12">
+                    <div class="card h-100 todr-brand-colour-border">
+                        <h4 class="card-header todr-brand-colour-text">
+                            Placeholder
+                        </h4>
+                        <div class="card-body">
+                            <p>This is a placeholder untill I think of something useful to put here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 

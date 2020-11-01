@@ -15,7 +15,7 @@ if (!empty($_SESSION['errorMessage'])) {
 }
 
 if (!empty($_SESSION['successMessage'])) {
-    $errorMessage = $_SESSION['successMessage'];
+    $successMessage = $_SESSION['successMessage'];
     unset($_SESSION['successMessage']);
 }
 ?>
@@ -49,7 +49,7 @@ if (!empty($_SESSION['successMessage'])) {
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST" id="logoutForm">
-                    <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user"></i> <?= $account->getEmail() ?></div>
+                    <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user-circle"></i> <?= $account->getEmail() ?></div>
                     <a href="settings.php"><i class="fas fa-user-edit fa-lg todr-todogroup-edit mr-3" data-toggle="tooltip" data-placement="bottom" title="Edit user settings"></i></a>
                     <i class="fas fa-sign-out-alt fa-lg todr-todogroup-delete" onclick="submitLogout()" data-toggle="tooltip" data-placement="bottom" title="Logout"></i>
                 </form>
@@ -89,7 +89,6 @@ if (!empty($_SESSION['successMessage'])) {
 
                     <div class="tab-content" id="settingsTabContent">
                         <div class="tab-pane fade show active border border-top-0 p-2" id="details" role="tabpanel">
-                            <h3>Details</h3>
                             <form>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label"><strong>Email</strong></label>
@@ -113,23 +112,21 @@ if (!empty($_SESSION['successMessage'])) {
                         </div>
 
                         <div class="tab-pane fade border border-top-0 p-2" id="name" role="tabpanel">
-                            <h3>Update names</h3>
-                            <form action="../php/_updateName.php" id="formUpdateName">
+                            <form action="../php/_updateName.php" id="formUpdateName" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>
-                                    <input type="text" id="firstName" name="firstName" required class="form-control mw-50">
+                                    <input type="text" id="firstName" name="firstName" required class="form-control mw-50" value="<?= $account->getFirstName() ?>">
                                 </div>
                                 <div class="form-group">
-                                    <label for="lastName">Last Name (Optional)</label>
-                                    <input type="text" id="lastName" name="lastName" required class="form-control mw-50"></input>
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" required class="form-control mw-50" value="<?= $account->getLastName() ?>"></input>
                                 </div>
                                 <button class="btn btn-primary">Update</button>
                             </form>
                         </div>
 
                         <div class="tab-pane fade border border-top-0 p-2" id="password" role="tabpanel">
-                            <h3>Update Password</h3>
-                            <form action="../php/_updatePassword.php" id="formChangePassword">
+                            <form action="../php/_updatePassword.php" id="formChangePassword" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">Current Password</label>
                                     <input type="password" id="currentPassword" name="currentPassword" required class="form-control mw-50">
@@ -141,7 +138,7 @@ if (!empty($_SESSION['successMessage'])) {
                                 </div>
                                 <div class="form-group">
                                     <label for="newPasswordConfirm">Confirm new password</label>
-                                    <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" required class="form-control mw-50"></input>
+                                    <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" data-msg-equalTo="Passwords do not match." required class="form-control mw-50"></input>
                                 </div>
                                 <button class="btn btn-primary">Change</button>
                             </form>
@@ -168,6 +165,15 @@ if (!empty($_SESSION['successMessage'])) {
         }
 
         $(function() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+
+            if (urlParams.has('tab')) {
+                const tabName = urlParams.get('tab');
+
+                $(`#${tabName}`).tab('show');
+            }
+
             $('#formUpdateName').validate({
                 onkeyup: false,
                 onclick: false,
@@ -209,7 +215,8 @@ if (!empty($_SESSION['successMessage'])) {
                     newPasswordConfirm: {
                         required: true,
                         maxlength: 100,
-                        noWhiteSpace: true
+                        noWhiteSpace: true,
+                        equalTo: '#newPassword'
                     }
                 },
                 showErrors: function(errorMap, errorList) {

@@ -70,36 +70,36 @@ class Account
     {
         global $connection;
 
-        $name = trim($email);
-        $password = trim($password);
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            $sessionId = session_id();
+            $email = trim($email);
+            $password = trim($password);
 
-        if (!is_null($this->getIdFromName($email))) {
-            throw new Exception("User name is already taken.");
-        }
+            if (!is_null($this->getIdFromName($email))) {
+                throw new Exception("User name is already taken.");
+            }
 
-        if (is_null($firstName) || is_null($lastName)) {
-            throw new Exception("First name and last name must be provided.");
-        }
+            $addAccountQuery = $connection->prepare("INSERT INTO t_users (email, password, firstName, lastName) VALUES (?, ?, ?, ?)");
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $addAccountQuery->bind_param("ssss", $email, $hash, $firstName, $lastName);
+            $addAccountQuery->execute();
 
-        $addAccountQuery = $connection->prepare("INSERT INTO t_users (email, password, firstName, lastName) VALUES (?, ?, ?, ?)");
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        $addAccountQuery->bind_param("ssss", $email, $hash, $firstName, $lastName);
-        $addAccountQuery->execute();
-        $addAccountQuery->store_result();
+            if (!empty($addAccountQuery->error)) {
+                throw new Exception("Failed to add user.");
+            }
 
-        if (!empty($addAccountQuery->error)) {
-            throw new Exception("Failed to add user");
-        }
+            $getAccountQuery = $connection->query("SELECT id, email, password, firstName, lastName, dateCreated FROM t_users WHERE id = $addAccountQuery->insert_id");
+            while ($row = $getAccountQuery->fetch_assoc()) {
+                $this->id = $row['id'];
+                $this->email = $row['email'];
+                $this->password = $row['password'];
+                $this->isAuthenticated = true;
+                $this->firstName = $row['firstName'];
+                $this->lastName = $row['lastName'];
+                $this->dateCreated = $row['dateCreated'];
+            }
 
-        $getAccountQuery = $connection->query("SELECT id, email, password, firstName, lastName, dateCreated FROM t_users WHERE id = $addAccountQuery->insert_id");
-        while ($row = $getAccountQuery->fetch_assoc()) {
-            $this->id = $row['id'];
-            $this->email = $row['email'];
-            $this->password = $row['password'];
-            $this->isAuthenticated = true;
-            $this->firstName = $row['firstName'];
-            $this->lastName = $row['lastName'];
-            $this->dateCreated = $row['dateCreated'];
+            $connection->query("INSERT INTO t_persist (iduser, token) VALUES ($this->id, '$sessionId')");
         }
     }
 
@@ -113,6 +113,7 @@ class Account
 
         $userQuery->bind_result($userID);
         $userQuery->store_result();
+        $userQuery->fetch();
 
         return $userQuery->num_rows() > 0 ? $userID : null;
     }
@@ -196,5 +197,32 @@ class Account
         }
 
         return;
+    }
+
+    public function updateNames(string $firstName, string $lastName)
+    {
+        global $connection;
+
+        $updateNames = $connection->prepare("UPDATE t_users SET firstName=?, lastName=? WHERE id = {$this->id}");
+        $updateNames->bind_param("ss", $firstName, $lastName);
+        $success = $updateNames->execute();
+
+        if (!$success) {
+            throw new Exception("Updating names failed.");
+        }
+    }
+
+    public function changePassword($newPassword)
+    {
+        global $connection;
+
+        $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $updatePasswordQuery = $connection->prepare("UPDATE t_users SET password=? WHERE id = {$this->id}");
+        $updatePasswordQuery->bind_param("s", $passwordHash);
+        $success = $updatePasswordQuery->execute();
+
+        if (!$success) {
+            throw new Exception("Updating password failed.");
+        }
     }
 }

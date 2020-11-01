@@ -14,6 +14,14 @@
     background-color: #73d182!important;
 }
 
+.todr-brand-colour-border {
+    border-color: #30913f;
+}
+
+.todr-brand-colour-border-accent {
+    border-color: #73d182;
+}
+
 .todr-navbar-top-accent {
     border-top: 4px solid #73d182!important;
 }
@@ -100,4 +108,8 @@
 
 .mw-50 {
     max-width: 500px;
+}
+
+small.error {
+    color: rgb(219, 31, 31);
 }

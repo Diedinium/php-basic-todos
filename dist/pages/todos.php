@@ -11,6 +11,7 @@ if (!$account->getAuthenticated()) {
 
 $todoGroups = [];
 $errorMessage;
+$successMessage;
 $result = $connection->query("SELECT id, header, dateCreated FROM t_todogroup WHERE iduser = {$account->getId()}");
 
 if ($result->num_rows > 0) {
@@ -22,6 +23,11 @@ if ($result->num_rows > 0) {
 if (!empty($_SESSION['errorMessage'])) {
     $errorMessage = $_SESSION['errorMessage'];
     unset($_SESSION['errorMessage']);
+}
+
+if (!empty($_SESSION['successMessage'])) {
+    $successMessage = $_SESSION['successMessage'];
+    unset($_SESSION['successMessage']);
 }
 ?>
 
@@ -54,7 +60,7 @@ if (!empty($_SESSION['errorMessage'])) {
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST" id="logoutForm">
-                    <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user"></i> <?= $account->getEmail() ?></div>
+                    <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user-circle"></i> <?= $account->getEmail() ?></div>
                     <a href="settings.php"><i class="fas fa-user-edit fa-lg todr-todogroup-edit mr-3" data-toggle="tooltip" data-placement="bottom" title="Edit user settings"></i></a>
                     <i class="fas fa-sign-out-alt fa-lg todr-todogroup-delete" onclick="submitLogout()" data-toggle="tooltip" data-placement="bottom" title="Logout"></i>
                 </form>
@@ -67,6 +73,12 @@ if (!empty($_SESSION['errorMessage'])) {
             <?php if (!empty($errorMessage)) : ?>
                 <div class="alert alert-danger mt-2">
                     <?= $errorMessage ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($successMessage)) : ?>
+                <div class="alert alert-success mt-2">
+                    <?= $successMessage ?>
                 </div>
             <?php endif; ?>
 
@@ -146,7 +158,7 @@ if (!empty($_SESSION['errorMessage'])) {
                                                                         <span class="text-muted">
                                                                             <?= $dueDate->format('Y/m/d H:i a') ?>
                                                                         </span>
-                                                                        <?php if ($isOverdue) : ?>
+                                                                        <?php if ($isOverdue && $todo['complete'] == false) : ?>
                                                                             <span class="badge badge-danger">Overdue</span>
                                                                         <?php endif; ?>
                                                                     </span>
