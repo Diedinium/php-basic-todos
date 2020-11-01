@@ -1,86 +1,41 @@
 <?php
-require __DIR__.'/../php/_connect.php';
-require __DIR__.'/../php/_utilities.php';
+require __DIR__ . '/_connect.php';
+require __DIR__ . '/_account.php';
+require __DIR__ . '/_utilities.php';
 
-$cookieName = "UserAuthToken";
-$userID;
-$verifiedEmail;
-$validLogon = false;
+session_start();
+
+$account = new Account();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    session_start();
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    if (isset($_POST['email']) && isset($_POST['password'])) {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
 
-    if (empty($email) || empty($password)) {
-        $_SESSION['loginMessage'] = "You somehow did not provide a valid email address or password... having fun messing around with the HTML, hmm?";
-        header("Location: ../index.php");
-        $connection->close();
-        exit;
-    } else {
-        $query = "SELECT id, email FROM t_users WHERE email = ? AND password = ?";
-        $userQuery = $connection->prepare($query);
-
-        $userQuery->bind_param("ss", $email, $password);
-        $userQuery->execute();
-
-        $userQuery->bind_result($userID, $verifyiedEmail);
-        $userQuery->store_result();
-
-        if ($userQuery->num_rows < 1) {;
-            $_SESSION['loginMessage'] = "You did not provide valid login details.";
-            header("Location: ../index.php");
-            $connection->close();
-            $userQuery->close();
-            exit;
-        } else {
-            $userQuery->fetch();
-
-            $GUID = getGUID();
-            $cookieValue = "{$verifyiedEmail}:{$GUID}";
-
-            $query = "INSERT INTO t_persist (iduser, token) VALUES ($userID, '$cookieValue')";
-            $connection->query($query);
-
-            setcookie($cookieName, $cookieValue, null, "/", null, false, true);
-
-            header("Location: ../pages/todos.php");
-            $connection->close();
-            exit;
+        if (empty($email) || empty($password)) {
+            dieWithError("Could not login, either a username or password was not provided");
         }
+
+        try {
+            $account->login($email, $password);
+
+            if ($account->getAuthenticated()) {
+                $_SESSION['successMessage'] = "Logged in successfully";
+                header("Location: ../pages/todos.php");
+                die;
+            }
+            else {
+                dieWithError("Login failed.");
+            }
+        }
+        catch (Exception $ex) {
+            dieWithError($ex->getMessage());
+        }   
+    }
+    else {
+        $account->login();
     }
 }
 else {
-    if (isset($_COOKIE[$cookieName])) {
-        $authToken = $_COOKIE[$cookieName];
-        $query = "SELECT iduser, token FROM t_persist WHERE token = ?";
-    
-        $userQuery = $connection->prepare($query);
-    
-        $userQuery->bind_param("s", $authToken);
-        $userQuery->execute();
-    
-        $userQuery->bind_result($userID, $token);
-        $userQuery->store_result();
-
-        if ($userQuery->num_rows > 0) {
-            while ($userQuery->fetch()) 
-            {
-                if ($token === $authToken) {
-                    $validLogon = true;
-
-                    $query = "SELECT id, email FROM t_users WHERE id = {$userID}";
-                    $userQueryResults = $connection->query($query);
-
-                    $row = $userQueryResults->fetch_assoc();
-
-                    $verifiedEmail = $row['email'];
-                }
-            }
-        }
-
-        $userQuery->close();
-        $connection->close();
-    }
+    $account->login();
 }
-?>

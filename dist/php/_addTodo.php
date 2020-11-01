@@ -1,23 +1,15 @@
 <?php
-require __DIR__ . '/_authTokenOnly.php';
 require __DIR__ . '/_connect.php';
+require __DIR__ . '/_auth.php';
 
-if (!$validLogon) {
-    session_start();
-    $_SESSION['loginMessage'] = "You did not provide valid login details.";
-    header("Location: ../index.php");
-    $connection->close();
-    exit;
+if (!$account->getAuthenticated()) {
+    dieWithError("You did not provide valid login details.");
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    session_start();
     if (!isset($_POST['addTodoHeader']) || !isset($_POST['todoGroupID'])) {
-        header("Location: {$_SERVER['HTTP_REFERER']}");
-        $_SESSION['todoAddError'] = "Unable to add todo. Header must be set.";
-        exit;
+        dieWithError("Unable to add todo. Header must be set.", "pages/todos.php");
     } else {
-        $query = "";
         $todoGroupID = $_POST['todoGroupID'];
 
         $todoGroupQuery = $connection->prepare("SELECT iduser FROM t_todogroup WHERE id = ?");
@@ -29,10 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $todoGroupQuery->store_result();
         $todoGroupQuery->fetch();
 
-        if ($todoGroupuserID !== $userID) {
-            header("Location: {$_SERVER['HTTP_REFERER']}");
-            $_SESSION['todoAddError'] = "Unable to add todo.";
-            exit;
+        if ($todoGroupuserID != $account->getId()) {
+            dieWithError("Unable to add todo", "pages/todos.php");
         } else {
             $insertTodoQuery;
             $todoHeader = $_POST['addTodoHeader'];
@@ -53,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 else {
                     header("Location: {$_SERVER['HTTP_REFERER']}");
-                    $_SESSION['todoAddError'] = "Unable to add todo.";
+                    $_SESSION['errorMessage'] = "Unable to add todo.";
                     exit;
                 }
             } else {
@@ -71,12 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                     else {
                         header("Location: {$_SERVER['HTTP_REFERER']}");
-                        $_SESSION['todoAddError'] = "Unable to add todo.";
+                        $_SESSION['errorMessage'] = "Unable to add todo.";
                         exit;
                     }
                 } else {
                     header("Location: {$_SERVER['HTTP_REFERER']}");
-                    $_SESSION['todoAddError'] = "Unable to add todo. When adding due date, date and time must have a value";
+                    $_SESSION['errorMessage'] = "Unable to add todo. When adding due date, date and time must have a value";
                     exit;
                 }
             }

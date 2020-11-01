@@ -1,22 +1,17 @@
 <?php
-require __DIR__ . '/../php/_auth.php';
 require __DIR__ . '/../php/_connect.php';
+require __DIR__ . '/../php/_auth.php';
 
-$userQuery;
-$todoGroups = [];
-$result;
-
-if (!$validLogon) {
-    session_start();
-    $_SESSION['loginMessage'] = "You did not provide valid login details.";
+if (!$account->getAuthenticated()) {
+    $_SESSION['errorMessage'] = "You did not provide valid login details.";
     header("Location: ../index.php");
     $connection->close();
     exit;
 }
 
-$query = "SELECT id, header, dateCreated FROM t_todogroup WHERE iduser = $userID";
-
-$result = $connection->query($query);
+$todoGroups = [];
+$errorMessage;
+$result = $connection->query("SELECT id, header, dateCreated FROM t_todogroup WHERE iduser = {$account->getId()}");
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -24,12 +19,9 @@ if ($result->num_rows > 0) {
     }
 }
 
-session_start();
-$errorMessage;
-
-if (!empty($_SESSION['todoAddError'])) {
-    $errorMessage = $_SESSION['todoAddError'];
-    unset($_SESSION['todoAddError']);
+if (!empty($_SESSION['errorMessage'])) {
+    $errorMessage = $_SESSION['errorMessage'];
+    unset($_SESSION['errorMessage']);
 }
 ?>
 
@@ -46,24 +38,27 @@ if (!empty($_SESSION['todoAddError'])) {
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top todr-navbar-top-accent shadow-sm">
-        <a class="navbar-brand todr-brand-colour-text" href="#"><i class="fas fa-check-double mr-1"></i>Todr</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="container">
+            <a class="navbar-brand todr-brand-colour-text" href="#"><i class="fas fa-check-double mr-1"></i>Todr</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="../index.php"><i class="fas fa-home"></i> Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST">
-                <div class="mr-sm-3 mr-2 text-muted"><i class="fas fa-user"></i> <?= $verifiedEmail ?></div>
-                <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
-            </form>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="../index.php"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST" id="logoutForm">
+                    <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user"></i> <?= $account->getEmail() ?></div>
+                    <a href="settings.php"><i class="fas fa-user-edit fa-lg todr-todogroup-edit mr-3" data-toggle="tooltip" data-placement="bottom" title="Edit user settings"></i></a>
+                    <i class="fas fa-sign-out-alt fa-lg todr-todogroup-delete" onclick="submitLogout()" data-toggle="tooltip" data-placement="bottom" title="Logout"></i>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -76,16 +71,17 @@ if (!empty($_SESSION['todoAddError'])) {
             <?php endif; ?>
 
             <div>
-                <div class="todr-subtle-shadow p-3 mt-3">
-                    <form action="../php/_addTodoGroup.php" method="POST" id="formAddTodoGroup">
-                        <div class="input-group">
-                            <input class="form-control" type="text" name="todoGroupHeader" required maxlength="255" placeholder="Todo group title">
-                            <input type="hidden" name="userID" value="<?= $userID ?>">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit">Add Group</button>
+                <div class="card mt-3 todr-subtle-shadow bg-white">
+                    <div class="card-body p-3">
+                        <form action="../php/_addTodoGroup.php" method="POST" id="formAddTodoGroup">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="todoGroupHeader" required maxlength="255" placeholder="Todo group title">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit">Add Group</button>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
 
                 <?php if (count($todoGroups) > 0) : ?>
@@ -114,7 +110,9 @@ if (!empty($_SESSION['todoAddError'])) {
                                 <div>
                                     <?php if (count($todos) > 0) : ?>
                                         <ul class="list-group mb-3">
-                                            <?php foreach ($todos as $todo) : ?>
+                                            <?php foreach ($todos as $todo) :
+                                                $createdDate = new DateTime($todo['createdDate']);
+                                            ?>
                                                 <li class="list-group-item p-2">
                                                     <div class="row no-gutters">
                                                         <div class="col-9 col-md-11 pb-1">
@@ -134,13 +132,12 @@ if (!empty($_SESSION['todoAddError'])) {
                                                             <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Delete todo item" class="fas fa-trash todr-todogroup-delete"></i>
                                                         </div>
                                                         <div class="col-12 pb-1">
-                                                            <?= $todo['description'] ?>
+                                                            <?php echo nl2br($todo['description']); ?>
                                                         </div>
                                                         <div class="col-12">
                                                             <div class="d-flex">
                                                                 <?php if (!empty($todo['dueDate'])) :
                                                                     $dueDate = new DateTime($todo['dueDate']);
-                                                                    $createdDate = new DateTime($todo['createdDate']);
                                                                     $now = new DateTime();
                                                                     $isOverdue = $dueDate < $now;
                                                                 ?>
@@ -175,6 +172,17 @@ if (!empty($_SESSION['todoAddError'])) {
                             </div>
                         </div>
                     <?php endforeach; ?>
+                <?php else : ?>
+                    <div class="card mt-2 todr-subtle-shadow bg-white">
+                        <div class="card-body p-3">
+                            <h4 class="card-title d-flex">
+                                No todo groups found.
+                            </h4>
+                            <div>
+                                Use the input above to add your first group!
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -235,6 +243,10 @@ if (!empty($_SESSION['todoAddError'])) {
         function openAddTodoModal(id) {
             $('#ModalAddTodo').modal('show');
             $('#todoGroupID').val(id);
+        }
+
+        function submitLogout() {
+            $('#logoutForm').submit();
         }
 
         $(function() {

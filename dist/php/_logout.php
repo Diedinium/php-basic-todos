@@ -1,30 +1,19 @@
 <?php
-require __DIR__."/_authTokenOnly.php";
-require __DIR__."/_connect.php";
+require __DIR__ . '/_connect.php';
+require __DIR__ . '/_account.php';
 
-if (isset($_COOKIE[$cookieName])) {
-    session_start();
-    $cookieValue = $_COOKIE[$cookieName];
+session_start();
 
-    $deleteQuery = $connection->prepare("DELETE FROM t_persist WHERE token = ?");
-    $deleteQuery->bind_param("s", $cookieValue);
-    $exec = $deleteQuery->execute();
+$account = new Account();
 
-    if ($exec) {
-        setcookie($cookieName, "", time() - 3600);
-        $_SESSION['logoutSuccess'] = true;
-        $_SESSION['logoutMessage'] = "You have been logged out.";
-        header("Location: ../index.php");
-        $connection->close();
-        $deleteQuery->close();
-        exit;
-    }
-    else {
-        $_SESSION['logoutFailed'] = true;
-        $_SESSION['logoutMessage'] = "Logout failed, could not delete authentication token.";
-    }
-}
-else {
+try {
+    $account->logout();
+    $_SESSION['successMessage'] = 'Logout successful';
+    header("Location: ../");
+    die;
+} catch (Exception $ex) {
+    $_SESSION['errorMessage'] = 'Logout failed, are you sure you haven\'t already logged out?';
+    header("Location: {$_SERVER['HTTP_REFERER']}");
     $connection->close();
+    die;
 }
-
