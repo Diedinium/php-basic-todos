@@ -225,4 +225,34 @@ class Account
             throw new Exception("Updating password failed.");
         }
     }
+
+    public function deleteAllTodos()
+    {
+        global $connection;
+
+        if (is_null($this->id)) {
+            throw new Exception("Cannot delete, no user id.");
+        }
+
+        $success = $connection->query("DELETE FROM t_todogroup WHERE iduser = $this->id");
+
+        if (!$success) {
+            throw new Exception("Deleting todos failed.");
+        }
+    }
+
+    public function deleteAccount()
+    {
+        global $connection;
+
+        if (is_null($this->id)) {
+            throw new Exception("Cannot delete, no user id.");
+        }
+
+        $success = $connection->query("DELETE FROM t_users WHERE id = $this->id");
+
+        if (!$success) {
+            throw new Exception("Deleting account failed.");
+        }
+    }
 }

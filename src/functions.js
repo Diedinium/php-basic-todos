@@ -39,6 +39,20 @@ window.displayStandardToast = function (message, title = null) {
     $toastContainer.append($toastStandard);
 }
 
+window.confirmDialog = function(message, title, yesCallback) {
+    $('#confirmMessage').html(message);
+    $('#confirmTitle').html(title);
+    $('#confirmModal').modal('show');
+
+    $('#confirmBtnYes').on('click', function () {
+        $('#confirmModal').modal('hide');
+        yesCallback();
+    });
+    $('#confirmBtnNo').on('click', function () {
+        $('#confirmModal').modal('hide');
+    });
+}
+
 $.validator.addMethod("noWhiteSpace", function(value, element) {
     if (value && !value.trim()) {
         return false;

@@ -77,13 +77,13 @@ if (!empty($_SESSION['successMessage'])) {
 
                     <ul class="nav nav-tabs nav-fill" id="settingsTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details">Details</a>
+                            <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details">Account Details</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="name-tab" data-toggle="tab" href="#name">Update Names</a>
+                            <a class="nav-link" id="security-tab" data-toggle="tab" href="#security">Security</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="password-tab" data-toggle="tab" href="#password">Update Password</a>
+                            <a class="nav-link" id="management-tab" data-toggle="tab" href="#management">Account Management</a>
                         </li>
                     </ul>
 
@@ -111,7 +111,26 @@ if (!empty($_SESSION['successMessage'])) {
                             </form>
                         </div>
 
-                        <div class="tab-pane fade border border-top-0 p-2" id="name" role="tabpanel">
+                        <div class="tab-pane fade border border-top-0 p-2" id="security" role="tabpanel">
+                            <form action="../php/_updatePassword.php" id="formChangePassword" method="POST">
+                                <div class="form-group">
+                                    <label for="firstName">Current Password</label>
+                                    <input type="password" id="currentPassword" name="currentPassword" required class="form-control mw-50">
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <input type="password" id="newPassword" name="newPassword" data-msg-minlength="Password must be at least 8 characters long." required class="form-control mw-50"></input>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPasswordConfirm">Confirm new password</label>
+                                    <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" data-msg-minlength="Password must be at least 8 characters long." data-msg-equalTo="Passwords do not match." required class="form-control mw-50"></input>
+                                </div>
+                                <button class="btn todr-brand-colour-bg text-white">Change</button>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade border border-top-0 p-2" id="management" role="tabpanel">
                             <form action="../php/_updateName.php" id="formUpdateName" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>
@@ -121,27 +140,38 @@ if (!empty($_SESSION['successMessage'])) {
                                     <label for="lastName">Last Name</label>
                                     <input type="text" id="lastName" name="lastName" required class="form-control mw-50" value="<?= $account->getLastName() ?>"></input>
                                 </div>
-                                <button class="btn btn-primary">Update</button>
+                                <button class="btn todr-brand-colour-bg text-white">Update</button>
                             </form>
-                        </div>
 
-                        <div class="tab-pane fade border border-top-0 p-2" id="password" role="tabpanel">
-                            <form action="../php/_updatePassword.php" id="formChangePassword" method="POST">
-                                <div class="form-group">
-                                    <label for="firstName">Current Password</label>
-                                    <input type="password" id="currentPassword" name="currentPassword" required class="form-control mw-50">
-                                </div>
-                                <hr>
-                                <div class="form-group">
-                                    <label for="newPassword">New Password</label>
-                                    <input type="password" id="newPassword" name="newPassword" required class="form-control mw-50"></input>
-                                </div>
-                                <div class="form-group">
-                                    <label for="newPasswordConfirm">Confirm new password</label>
-                                    <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" data-msg-equalTo="Passwords do not match." required class="form-control mw-50"></input>
-                                </div>
-                                <button class="btn btn-primary">Change</button>
-                            </form>
+                            <hr>
+
+                            <h3>Account Actions</h3>
+                            <div class="alert alert-warning">Please note that the settings below are permanent and cannot be undone!</div>
+
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <div class="d-sm-flex align-items-center">
+                                        <div class="pr-3">
+                                            <strong>Delete all todos</strong>
+                                            <div>This will delete all current todos along with the todo groups they are contained within. This action is permanent and cannot be undone.</div>
+                                        </div>
+                                        <form action="../php/_deleteAllTodos.php" method="POST" class="flex-shrink-0 mt-2 mt-sm-0" id="formDeleteAllTodos">
+                                            <button type="submit" class="btn btn-danger">Delete all todos</button>
+                                        </form>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="d-sm-flex align-items-center">
+                                        <div class="pr-3">
+                                            <strong>Delete Account</strong>
+                                            <div>This will permanently delete your account along with all associated data (todos etc). This action is permanent and cannot be undone.</div>
+                                        </div>
+                                        <form action="../php/_deleteAccount.php" method="POST" class="flex-shrink-0 mt-2 mt-sm-0" id="formDeleteAccount">
+                                            <button type="submit" class="btn btn-danger">Delete Account</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -164,6 +194,23 @@ if (!empty($_SESSION['successMessage'])) {
             $('#logoutForm').submit();
         }
 
+        $('#formDeleteAllTodos button').on('click', function(e) {
+            e.preventDefault();
+            
+            confirmDialog('Are you sure you want to delete all todos? This cannot be undone', 'Confirm Deletion', function() {
+                $('#formDeleteAllTodos').submit();
+            });
+        });
+
+        $('#formDeleteAccount button').on('click', function(e) {
+            e.preventDefault();
+            $form = $(this).parent();
+
+            confirmDialog('Are you sure you want to delete your account? This cannot be undone', 'Confirm Deletion', function() {
+                $($form).submit();
+            });
+        });
+
         $(function() {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
@@ -175,9 +222,6 @@ if (!empty($_SESSION['successMessage'])) {
             }
 
             $('#formUpdateName').validate({
-                onkeyup: false,
-                onclick: false,
-                onfocusout: false,
                 rules: {
                     firstName: {
                         required: true,
@@ -188,19 +232,12 @@ if (!empty($_SESSION['successMessage'])) {
                         required: true,
                         maxlength: 50,
                         noWhiteSpace: true
-                    }
+                    },
                 },
-                showErrors: function(errorMap, errorList) {
-                    this.defaultShowErrors();
-                    displayErrorToast(errorMap, errorList);
-                },
-                errorPlacement: function(error, element) {}
+                errorElement: 'small'
             });
 
             $('#formChangePassword').validate({
-                onkeyup: false,
-                onclick: false,
-                onfocusout: false,
                 rules: {
                     currentPassword: {
                         required: true,
@@ -210,20 +247,18 @@ if (!empty($_SESSION['successMessage'])) {
                     newPassword: {
                         required: true,
                         maxlength: 100,
+                        minlength: 8,
                         noWhiteSpace: true
                     },
                     newPasswordConfirm: {
                         required: true,
                         maxlength: 100,
+                        minlength: 8,
                         noWhiteSpace: true,
                         equalTo: '#newPassword'
                     }
                 },
-                showErrors: function(errorMap, errorList) {
-                    this.defaultShowErrors();
-                    displayErrorToast(errorMap, errorList);
-                },
-                errorPlacement: function(error, element) {}
+                errorElement: 'small'
             });
 
             $('[data-toggle="tooltip"]').tooltip();

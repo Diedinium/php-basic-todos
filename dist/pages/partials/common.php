@@ -1,5 +1,5 @@
 <div class="todr-toast-container position-fixed" id="toastContainer" style="z-index: 2000;">
-    
+
 </div>
 
 <div class="d-none" id="templates">
@@ -33,6 +33,23 @@
             </button>
         </div>
         <div class="toast-body">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="confirmTitle">Confirm</h4>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmBtnYes" type="button" class="btn todr-brand-colour-bg text-white">Yes</button>
+                <button id="confirmBtnNo" type="button" class="btn btn-danger">No</button>
+            </div>
         </div>
     </div>
 </div>

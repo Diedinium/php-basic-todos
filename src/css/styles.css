@@ -6,6 +6,10 @@
     background-color: #30913f!important;
 }
 
+button.todr-brand-colour-bg:hover, a.todr-brand-colour-bg:hover {
+    background-color: #277033!important;
+}
+
 .todr-brand-colour-text-accent {
     color: #73d182!important;
 }
