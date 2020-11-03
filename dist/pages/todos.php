@@ -87,7 +87,7 @@ if (!empty($_SESSION['successMessage'])) {
                     <div class="card-body p-3">
                         <form action="../php/_addTodoGroup.php" method="POST" id="formAddTodoGroup">
                             <div class="input-group">
-                                <input class="form-control" type="text" name="todoGroupHeader" required maxlength="255" placeholder="Todo group title">
+                                <input class="form-control" type="text" name="todoGroupHeader" required maxlength="255" placeholder="Todo group title" autofocus>
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" type="submit">Add Group</button>
                                 </div>
@@ -116,7 +116,7 @@ if (!empty($_SESSION['successMessage'])) {
                                     <span class="mr-auto"><?= $todoGroup['header'] ?></span>
                                     <span class="todr-todogroup-actions">
                                         <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo group" class="fas fa-edit fa-sm todr-todogroup-edit mr-2"></i>
-                                        <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Delete todo group" class="fas fa-trash fa-sm todr-todogroup-delete"></i>
+                                        <i data-toggle="tooltip" data-placement="top" title="Delete todo group" data-todogroup-id="<?= $todoGroupID ?>" class="fas fa-trash fa-sm todr-todogroup-delete event-todogroup-delete"></i>
                                     </span>
                                 </h4>
                                 <div>
@@ -223,11 +223,11 @@ if (!empty($_SESSION['successMessage'])) {
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="addTodoDate">Due date (Optional)</label>
-                                <input type="date" id="addTodoDate" name="addTodoDate" class="form-control">
+                                <input type="date" id="addTodoDate" name="addTodoDate" class="form-control" data-msg-required="When you set a due time, a date is required.">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="addTodoTime">Due time (Optional)</label>
-                                <input type="time" id="addTodoTime" name="addTodoTime" class="form-control">
+                                <input type="time" id="addTodoTime" name="addTodoTime" class="form-control" data-msg-required="When you set a due date, a time is required.">
                             </div>
                         </div>
 
@@ -280,11 +280,9 @@ if (!empty($_SESSION['successMessage'])) {
             });
 
             $('#formAddTodo').validate({
-                onkeyup: false,
-                onclick: false,
-                onfocusout: false,
                 rules: {
                     addTodoHeader: {
+                        maxlength: 250,
                         required: true,
                         noWhiteSpace: true
                     },
@@ -298,17 +296,32 @@ if (!empty($_SESSION['successMessage'])) {
                         required: '#addTodoDate:filled'
                     }
                 },
-                showErrors: function(errorMap, errorList) {
-                    this.defaultShowErrors();
-                    displayErrorToast(errorMap, errorList);
-                },
-                errorPlacement: function(error, element) {}
+                errorElement: 'small'
             });
 
             $('[data-toggle="tooltip"]').tooltip();
 
             $('input, select').focusout(function() {
                 $(this).removeClass('error');
+            });
+
+            $(document).on('click', '.event-todogroup-delete', function() {
+                const $parentToRemove = $(this).closest('div.card');
+                $.ajax({
+                    type: 'POST',
+                    url: '../php/_deleteTodoGroup.php',
+                    data: { id: $(this).attr('data-todogroup-id') },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success == true) {
+                            displaySuccessToast(response.message);
+                            $parentToRemove.fadeOut(500, () => $parentToRemove.remove());
+                        }
+                        else {
+                            displayErrorToastStandard(response.message);
+                        }
+                    }
+                });
             });
         });
     </script>

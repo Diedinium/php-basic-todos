@@ -13,6 +13,19 @@ window.displayErrorToast = function (errorMap, errorList) {
     }
 }
 
+window.displayErrorToastStandard = function (errorMessage, errorTitle = null) {
+    let $toastError = $('#templates').find('#templateToastError').clone();
+    let $toastContainer = $('#toastContainer');
+
+    if (errorTitle != null) {
+        $toastError.find('strong').first().html(errorTitle);
+    }
+    $toastError.find('.toast-body').first().append(`<p class="mb-0">${errorMessage}</p>`)
+
+    $toastError.toast('show');
+    $toastContainer.append($toastError);
+}
+
 window.displaySuccessToast = function (successMessage, successTitle = null) {
     let $toastSuccess = $('#templates').find('#templateToastSuccess').clone();
     let $toastContainer = $('#toastContainer');
@@ -39,7 +52,7 @@ window.displayStandardToast = function (message, title = null) {
     $toastContainer.append($toastStandard);
 }
 
-window.confirmDialog = function(message, title, yesCallback) {
+window.confirmDialog = function (message, title, yesCallback) {
     $('#confirmMessage').html(message);
     $('#confirmTitle').html(title);
     $('#confirmModal').modal('show');
@@ -53,7 +66,7 @@ window.confirmDialog = function(message, title, yesCallback) {
     });
 }
 
-$.validator.addMethod("noWhiteSpace", function(value, element) {
+$.validator.addMethod("noWhiteSpace", function (value, element) {
     if (value && !value.trim()) {
         return false;
     }

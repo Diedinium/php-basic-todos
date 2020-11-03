@@ -3,17 +3,17 @@
 class Account
 {
 
-    private $id;
+    private int $id;
     private $email;
     private $password;
-    private $isAuthenticated;
+    private bool $isAuthenticated;
     private $firstName;
     private $lastName;
     private $dateCreated;
 
     public function __construct()
     {
-        $this->id = null;
+        $this->id = 0;
         $this->email = null;
         $this->password = null;
         $this->isAuthenticated = false;
@@ -26,7 +26,7 @@ class Account
     {
     }
 
-    public function getId()
+    public function getId():int
     {
         return $this->id;
     }
@@ -41,7 +41,7 @@ class Account
         return $this->password;
     }
 
-    public function getAuthenticated()
+    public function getAuthenticated():bool
     {
         return $this->isAuthenticated;
     }
