@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/_connect.php';
+require __DIR__ . '/../classes/_connect.php';
 require __DIR__ . '/_auth.php';
 
 if (!$account->getAuthenticated()) {
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $_SESSION['successMessage'] = "Password updated, please log back in using your new password";
             $account->logout();
-            header("Location: ../");
+            header("Location: ../../");
         }
         catch (Exception $ex) {
             dieWithError($ex->getMessage(), "pages/settings.php?tab=security-tab");

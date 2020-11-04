@@ -1,7 +1,7 @@
 <?php
-require __DIR__ . '/_connect.php';
-require __DIR__ . '/_account.php';
-require __DIR__ . '/_utilities.php';
+require __DIR__ . '/../classes/_connect.php';
+require __DIR__ . '/../classes/_account.php';
+require __DIR__ . '/../classes/_utilities.php';
 
 session_start();
 
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($account->getAuthenticated()) {
                 $_SESSION['successMessage'] = "Logged in successfully";
-                header("Location: ../pages/todos.php");
+                header("Location: ../../pages/todos.php");
                 die;
             }
             else {

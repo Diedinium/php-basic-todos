@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/_connect.php';
-require __DIR__ . '/_auth.php';
+require __DIR__ . '/../classes/_connect.php';
+require __DIR__ . '/../account/_auth.php';
 
 if (!$account->getAuthenticated()) {
     dieWithError("You did not provide valid login details.");
@@ -16,9 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result == $insertQuery->execute();
     }
 } else {
-    header("Location: ../index.php");
+    header("Location: ../../index.php");
     die;
 }
 
-header("Location: ../pages/todos.php");
+header("Location: ../../pages/todos.php");
 die;

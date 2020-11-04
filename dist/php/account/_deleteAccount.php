@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/_connect.php';
+require __DIR__ . '/../classes/_connect.php';
 require __DIR__ . '/_auth.php';
 
 if (!$account->getAuthenticated()) {
@@ -8,10 +8,11 @@ if (!$account->getAuthenticated()) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        $account->deleteAllTodos();
+        $account->logout();
+        $account->deleteAccount();
 
-        $_SESSION['successMessage'] = "All todos deleted.";
-        header("Location: ../pages/settings.php?tab=management-tab");
+        $_SESSION['successMessage'] = "Your account has succesfully been deleted.";  
+        header("Location: ../../");
     } catch (Exception $ex) {
         dieWithError($ex->getMessage(), "pages/settings.php?tab=management-tab");
     }

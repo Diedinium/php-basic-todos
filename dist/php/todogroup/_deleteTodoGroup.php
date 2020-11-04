@@ -1,7 +1,7 @@
 <?php
-require __DIR__ . '/_connect.php';
-require __DIR__ . '/_auth.php';
-require __DIR__ . '/_todoManager.php';
+require __DIR__ . '/../classes/_connect.php';
+require __DIR__ . '/../account/_auth.php';
+require __DIR__ . '/../classes/_todoManager.php';
 
 if (!$account->getAuthenticated()) {
     echo json_encode(['success' => 0, 'message' => 'You did not provide valid credentials.']);

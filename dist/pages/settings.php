@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../php/_connect.php';
-require __DIR__ . '/../php/_auth.php';
+require __DIR__ . '/../php/classes/_connect.php';
+require __DIR__ . '/../php/account/_auth.php';
 
 if (!$account->getAuthenticated()) {
     dieWithError("You did not provide valid login details.");
@@ -48,7 +48,7 @@ if (!empty($_SESSION['successMessage'])) {
                         <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST" id="logoutForm">
+                <form class="form-inline my-2 my-lg-0" action="../php/account/_logout.php" method="POST" id="logoutForm">
                     <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user-circle"></i> <?= $account->getEmail() ?></div>
                     <a href="settings.php"><i class="fas fa-user-edit fa-lg todr-todogroup-edit mr-3" data-toggle="tooltip" data-placement="bottom" title="Edit user settings"></i></a>
                     <i class="fas fa-sign-out-alt fa-lg todr-todogroup-delete" onclick="submitLogout()" data-toggle="tooltip" data-placement="bottom" title="Logout"></i>
@@ -112,7 +112,7 @@ if (!empty($_SESSION['successMessage'])) {
                         </div>
 
                         <div class="tab-pane fade border border-top-0 p-2" id="security" role="tabpanel">
-                            <form action="../php/_updatePassword.php" id="formChangePassword" method="POST">
+                            <form action="../php/account/_updatePassword.php" id="formChangePassword" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">Current Password</label>
                                     <input type="password" id="currentPassword" name="currentPassword" required class="form-control mw-50">
@@ -131,7 +131,7 @@ if (!empty($_SESSION['successMessage'])) {
                         </div>
 
                         <div class="tab-pane fade border border-top-0 p-2" id="management" role="tabpanel">
-                            <form action="../php/_updateName.php" id="formUpdateName" method="POST">
+                            <form action="../php/account/_updateName.php" id="formUpdateName" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>
                                     <input type="text" id="firstName" name="firstName" required class="form-control mw-50" value="<?= $account->getFirstName() ?>">
@@ -155,7 +155,7 @@ if (!empty($_SESSION['successMessage'])) {
                                             <strong>Delete all todos</strong>
                                             <div>This will delete all current todos along with the todo groups they are contained within. This action is permanent and cannot be undone.</div>
                                         </div>
-                                        <form action="../php/_deleteAllTodos.php" method="POST" class="flex-shrink-0 mt-2 mt-sm-0" id="formDeleteAllTodos">
+                                        <form action="../php/todos/_deleteAllTodos.php" method="POST" class="flex-shrink-0 mt-2 mt-sm-0" id="formDeleteAllTodos">
                                             <button type="submit" class="btn btn-danger">Delete all todos</button>
                                         </form>
                                     </div>
@@ -166,7 +166,7 @@ if (!empty($_SESSION['successMessage'])) {
                                             <strong>Delete Account</strong>
                                             <div>This will permanently delete your account along with all associated data (todos etc). This action is permanent and cannot be undone.</div>
                                         </div>
-                                        <form action="../php/_deleteAccount.php" method="POST" class="flex-shrink-0 mt-2 mt-sm-0" id="formDeleteAccount">
+                                        <form action="../php/account/_deleteAccount.php" method="POST" class="flex-shrink-0 mt-2 mt-sm-0" id="formDeleteAccount">
                                             <button type="submit" class="btn btn-danger">Delete Account</button>
                                         </form>
                                     </div>

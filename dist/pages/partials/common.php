@@ -35,6 +35,8 @@
         <div class="toast-body">
         </div>
     </div>
+
+    <div class="alert alert-info" id="noTodosAlert">This todo group does not yet contain any todos.</div>
 </div>
 
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog">

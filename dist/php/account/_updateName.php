@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/_connect.php';
+require __DIR__ . '/../classes/_connect.php';
 require __DIR__ . '/_auth.php';
 
 if (!$account->getAuthenticated()) {
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $account->updateNames($firstName, $lastName);
 
             $_SESSION['successMessage'] = "Names updated";
-            header("Location: ../pages/settings.php?tab=management-tab");
+            header("Location: ../../pages/settings.php?tab=management-tab");
         }
         catch (Exception $ex) {
             dieWithError($ex->getMessage(), "pages/settings.php?tab=management-tab");

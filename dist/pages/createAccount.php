@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../php/_connect.php';
-require __DIR__ . '/../php/_auth.php';
+require __DIR__ . '/../php/classes/_connect.php';
+require __DIR__ . '/../php/account/_auth.php';
 
 if ($account->getAuthenticated()) {
     $_SESSION['errorMessage'] = "You cannot create an account while you are still logged in. Please logout first.";
@@ -51,7 +51,7 @@ if (!empty($_SESSION['successMessage'])) {
                         <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" action="../php/_auth.php" method="POST" id="logonForm">
+                <form class="form-inline my-2 my-lg-0" action="../php/account/_auth.php" method="POST" id="logonForm">
                     <input class="form-control mr-sm-2 mb-sm-0 mb-2" type="email" name="email" required placeholder="Email" aria-label="Email">
                     <input class="form-control mr-sm-2" type="password" required name="password" placeholder="Password" aria-label="Password">
                     <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
@@ -80,7 +80,7 @@ if (!empty($_SESSION['successMessage'])) {
                         <h1 class="dipslay-4 todr-brand-colour-text"><i class="fas fa-check-double mr-1"></i>Todr</h1>
                         <h4>Create an account</h4>
                         <p>Already have an account? Login by using the login form in the navbar.</p>
-                        <form action="../php/_createAccount.php" method="POST" class="text-left" id="formCreateAccount">
+                        <form action="../php/account/_createAccount.php" method="POST" class="text-left" id="formCreateAccount">
                             <div class="form-label-group">
                                 <input type="email" id="createEmail" name="createEmail" class="form-control" placeholder="Email address" autofocus>
                                 <label for="createEmail">Email address</label>

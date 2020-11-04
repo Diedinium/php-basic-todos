@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/_connect.php';
+require __DIR__ . '/../classes/_connect.php';
 require __DIR__ . '/_auth.php';
 
 if ($account->getAuthenticated()) {
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $account->addAccount($createEmail, $createPassword, $createFirstName, $createLastName);
 
             $_SESSION['successMessage'] = "Account created! Welcome to Todr, get started by creating your first todo group below.";
-            header("Location: ../pages/todos.php");
+            header("Location: ../../pages/todos.php");
         }
         catch (Exception $ex) {
             dieWithError($ex->getMessage(), "pages/createAccount.php");

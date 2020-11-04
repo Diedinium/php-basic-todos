@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/php/_connect.php';
-require __DIR__ . '/php/_auth.php';
+require __DIR__ . '/php/classes/_connect.php';
+require __DIR__ . '/php/account/_auth.php';
 
 $errorMessage;
 $successMessage;
@@ -52,7 +52,7 @@ $connection->close();
                         <a class="nav-link" href="pages/about.php"><i class="fas fa-question"></i> About</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" action="php/_auth.php" method="POST" id="logonForm">
+                <form class="form-inline my-2 my-lg-0" action="php/account/_auth.php" method="POST" id="logonForm">
                     <input class="form-control mr-sm-2 mb-sm-0 mb-2" type="email" name="email" required placeholder="Email" aria-label="Email">
                     <input class="form-control mr-sm-2" type="password" required name="password" placeholder="Password" aria-label="Password">
                     <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
@@ -86,7 +86,7 @@ $connection->close();
                         </h4>
                         <div class="card-body">
                             <p>To start making todo lists, create an account using the button below.</p>
-                            <a href="pages/createAccount.php" class="btn todr-brand-colour-bg text-white">Create Account</a>
+                            <a href="pages/account/createAccount.php" class="btn todr-brand-colour-bg text-white">Create Account</a>
                         </div>
                     </div>
                 </div>

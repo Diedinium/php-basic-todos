@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../php/_connect.php';
-require __DIR__ . '/../php/_auth.php';
+require __DIR__ . '/../php/classes/_connect.php';
+require __DIR__ . '/../php/account/_auth.php';
 
 if (!$account->getAuthenticated()) {
     $_SESSION['errorMessage'] = "You did not provide valid login details.";
@@ -59,7 +59,7 @@ if (!empty($_SESSION['successMessage'])) {
                         <a class="nav-link" href="about.php"><i class="fas fa-question"></i> About</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" action="../php/_logout.php" method="POST" id="logoutForm">
+                <form class="form-inline my-2 my-lg-0" action="../php/account/_logout.php" method="POST" id="logoutForm">
                     <div class="mr-sm-3 mr-3 text-muted"><i class="fas fa-user-circle"></i> <?= $account->getEmail() ?></div>
                     <a href="settings.php"><i class="fas fa-user-edit fa-lg todr-todogroup-edit mr-3" data-toggle="tooltip" data-placement="bottom" title="Edit user settings"></i></a>
                     <i class="fas fa-sign-out-alt fa-lg todr-todogroup-delete" onclick="submitLogout()" data-toggle="tooltip" data-placement="bottom" title="Logout"></i>
@@ -85,7 +85,7 @@ if (!empty($_SESSION['successMessage'])) {
             <div>
                 <div class="card mt-3 todr-subtle-shadow bg-white">
                     <div class="card-body p-3">
-                        <form action="../php/_addTodoGroup.php" method="POST" id="formAddTodoGroup">
+                        <form action="../php/todogroup/_addTodoGroup.php" method="POST" id="formAddTodoGroup">
                             <div class="input-group">
                                 <input class="form-control" type="text" name="todoGroupHeader" required maxlength="255" placeholder="Todo group title" autofocus>
                                 <div class="input-group-append">
@@ -141,7 +141,7 @@ if (!empty($_SESSION['successMessage'])) {
                                                                 <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Mark as complete" class="fas fa-check todr-todogroup-check mr-2"></i>
                                                             <?php endif; ?>
                                                             <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo item" class="fas fa-edit todr-todogroup-edit mr-2"></i>
-                                                            <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Delete todo item" class="fas fa-trash todr-todogroup-delete"></i>
+                                                            <i data-toggle="tooltip" data-placement="top" title="Delete todo item" data-todo-id="<?= $todo['id'] ?>" class="fas fa-trash todr-todogroup-delete event-todo-delete"></i>
                                                         </div>
                                                         <div class="col-12 pb-1">
                                                             <?php echo nl2br($todo['description']); ?>
@@ -209,7 +209,7 @@ if (!empty($_SESSION['successMessage'])) {
                         <span>&times;</span>
                     </button>
                 </div>
-                <form action="../php/_addTodo.php" method="POST" id="formAddTodo">
+                <form action="../php/todos/_addTodo.php" method="POST" id="formAddTodo">
                     <div class="modal-body">
                         <input type="hidden" value="" id="todoGroupID" name="todoGroupID">
                         <div class="form-group">
@@ -309,13 +309,39 @@ if (!empty($_SESSION['successMessage'])) {
                 const $parentToRemove = $(this).closest('div.card');
                 $.ajax({
                     type: 'POST',
-                    url: '../php/_deleteTodoGroup.php',
+                    url: '../php/todogroup/_deleteTodoGroup.php',
                     data: { id: $(this).attr('data-todogroup-id') },
                     dataType: 'json',
                     success: function(response) {
                         if (response.success == true) {
                             displaySuccessToast(response.message);
                             $parentToRemove.fadeOut(500, () => $parentToRemove.remove());
+                        }
+                        else {
+                            displayErrorToastStandard(response.message);
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.event-todo-delete', function() {
+                const $parentToRemove = $(this).closest('li.list-group-item');
+                const $parentListGroup = $(this).closest('ul.list-group');
+                $.ajax({
+                    type: 'POST',
+                    url: '../php/todos/_deleteTodo.php',
+                    data: { id: $(this).attr('data-todo-id') },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success == true) {
+                            displaySuccessToast(response.message);
+                            $parentToRemove.fadeOut(500, () => {
+                                $parentToRemove.remove();
+                                const $remainingTodos = $parentListGroup.find('li');
+                                if ($remainingTodos.length < 1) {
+                                    $parentListGroup.replaceWith($('#templates #noTodosAlert').clone());
+                                }
+                            });
                         }
                         else {
                             displayErrorToastStandard(response.message);

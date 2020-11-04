@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/_connect.php';
-require __DIR__ . '/_auth.php';
+require __DIR__ . '/../classes/_connect.php';
+require __DIR__ . '/../account/_auth.php';
 
 if (!$account->getAuthenticated()) {
     dieWithError("You did not provide valid login details.");
@@ -8,11 +8,10 @@ if (!$account->getAuthenticated()) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        $account->logout();
-        $account->deleteAccount();
+        $account->deleteAllTodos();
 
-        $_SESSION['successMessage'] = "Your account has succesfully been deleted.";  
-        header("Location: ../");
+        $_SESSION['successMessage'] = "All todos deleted.";
+        header("Location: ../../pages/settings.php?tab=management-tab");
     } catch (Exception $ex) {
         dieWithError($ex->getMessage(), "pages/settings.php?tab=management-tab");
     }
