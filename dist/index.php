@@ -79,7 +79,7 @@ $connection->close();
             </div>
 
             <div class="row">
-                <div class="col-md-6 col-12">
+                <div class="col-md-6 col-12 mb-3 mb-md-0">
                     <div class="card h-100 todr-brand-colour-border">
                         <h4 class="card-header todr-brand-colour-text">
                             Create an account

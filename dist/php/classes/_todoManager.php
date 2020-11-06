@@ -5,14 +5,8 @@ class TodoManager
     public function deleteTodoGroup(int $idTodoGroup, int $idUser) {
         global $connection;
 
-        $userMatches = $this->TodoGroupUserIdMatches($idTodoGroup, $idUser);
-
-        if (!$userMatches) {
-            throw new Exception("Trying to be sneeky and delete todo groups that are not yours, huh?");
-        }
-
-        $deleteTodoGroup = $connection->prepare("DELETE FROM t_todogroup WHERE id = ?");
-        $deleteTodoGroup->bind_param("i", $idTodoGroup);
+        $deleteTodoGroup = $connection->prepare("DELETE FROM t_todogroup WHERE id = ? AND iduser = ?");
+        $deleteTodoGroup->bind_param("ii", $idTodoGroup, $idUser);
         $deleteTodoGroup->execute();
 
         if (!empty($deleteTodoGroup->error)) {
@@ -23,67 +17,27 @@ class TodoManager
     public function deleteTodo(int $idTodo, int $idUser) {
         global $connection;
 
-        $userMatches = $this->TodoUserIdMatches($idTodo, $idUser);
-
-        if (!$userMatches) {
-            throw new Exception("Trying to be sneeky and delete a todo that is not yours, huh?");
-        }
-
-        $deleteTodo = $connection->prepare("DELETE FROM t_todos WHERE id = ?");
-        $deleteTodo->bind_param("i", $idTodo);
+        $deleteTodo = $connection->prepare("DELETE t_todos FROM t_todos LEFT JOIN t_todogroup ON t_todos.idtodogroup = t_todogroup.id WHERE t_todos.id = ? AND t_todogroup.iduser = ?");
+        $deleteTodo->bind_param("ii", $idTodo, $idUser);
         $deleteTodo->execute();
 
         if (!empty($deleteTodo->error)) {
-            throw new Exception("Failed to delete todo group");
+            throw new Exception("Failed to delete todo.");
         }
     }
 
-    private function TodoGroupUserIdMatches(int $idTodoGroup, int $idUser):bool
-    {
+    public function toggleTodoComplete(int $idTodo, int $idUser, bool $currentStatus):bool {
         global $connection;
 
-        $findUserIdQuery = $connection->prepare("SELECT iduser FROM t_todogroup WHERE id = ?");
-        $findUserIdQuery->bind_param("i", $idTodoGroup);
-        $findUserIdQuery->execute();
+        $newStatus = !$currentStatus;
+        $updateStatus = $connection->prepare("UPDATE t_todos LEFT JOIN t_todogroup ON t_todos.idtodogroup = t_todogroup.id SET t_todos.complete = ? WHERE t_todos.id = ? AND t_todogroup.iduser = ?");
+        $updateStatus->bind_param("iii", $newStatus, $idTodo, $idUser);
+        $updateStatus->execute();
 
-        $findUserIdQuery->bind_result($foundUserId);
-        $findUserIdQuery->store_result();
-
-        if ($findUserIdQuery->num_rows < 1) {
-            throw new Exception("Todogroup not found");
+        if (!empty($updateStatus->error)) {
+            throw new Exception("Failed to change todo status.");
         }
 
-        if (!empty($findUserIdQuery->error)) {
-            throw new Exception("Failed to find todo group");
-        }
-
-        $findUserIdQuery->fetch();
-        return $idUser == $foundUserId;
-    }
-
-    private function TodoUserIdMatches(int $idTodo, int $idUser):bool {
-        global $connection;
-
-        $todosQuery = $connection->prepare("SELECT idtodogroup FROM t_todos WHERE id = ?");
-        $todosQuery->bind_param("i", $idTodo);
-        $todosQuery->execute();
-        $todosQuery->bind_result($idTodoGroup);
-        $todosQuery->store_result();
-        
-        if ($todosQuery->num_rows < 1) {
-            throw new Exception("No todo found.");
-        }
-        $todosQuery->fetch();
-        
-        $todoGroupResult = $connection->query("SELECT iduser FROM t_todogroup WHERE id = $idTodoGroup");
-
-        if ($todoGroupResult->num_rows < 1) {
-            throw new Exception("Error while locating todo group this todo is contained within");
-        }
-
-        $row = $todoGroupResult->fetch_assoc();
-        $foundUserId = $row['iduser'];
-
-        return $idUser == $foundUserId;
+        return $newStatus;
     }
 }

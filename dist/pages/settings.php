@@ -88,7 +88,7 @@ if (!empty($_SESSION['successMessage'])) {
                     </ul>
 
                     <div class="tab-content" id="settingsTabContent">
-                        <div class="tab-pane fade show active border border-top-0 p-2" id="details" role="tabpanel">
+                        <div class="tab-pane fade show active p-2" id="details" role="tabpanel">
                             <form>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label"><strong>Email</strong></label>
@@ -111,7 +111,7 @@ if (!empty($_SESSION['successMessage'])) {
                             </form>
                         </div>
 
-                        <div class="tab-pane fade border border-top-0 p-2" id="security" role="tabpanel">
+                        <div class="tab-pane fade p-2" id="security" role="tabpanel">
                             <form action="../php/account/_updatePassword.php" id="formChangePassword" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">Current Password</label>
@@ -130,7 +130,7 @@ if (!empty($_SESSION['successMessage'])) {
                             </form>
                         </div>
 
-                        <div class="tab-pane fade border border-top-0 p-2" id="management" role="tabpanel">
+                        <div class="tab-pane fade p-2" id="management" role="tabpanel">
                             <form action="../php/account/_updateName.php" id="formUpdateName" method="POST">
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>

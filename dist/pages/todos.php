@@ -136,9 +136,9 @@ if (!empty($_SESSION['successMessage'])) {
                                                         </div>
                                                         <div class="col-3 col-md-1 text-right pb-1">
                                                             <?php if ($todo['complete'] == true) : ?>
-                                                                <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Mark as incomplete" class="fas fa-times todr-todogroup-delete mr-2"></i>
+                                                                <i data-todo-id="<?= $todo['id'] ?>" data-duedate="<?= $todo['dueDate'] ?>" data-todo-status="<?= $todo['complete'] ?>" data-toggle="tooltip" data-placement="top" title="Mark as incomplete" class="fas fa-times todr-todogroup-delete mr-2 event-todo-status-toggle"></i>
                                                             <?php else : ?>
-                                                                <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Mark as complete" class="fas fa-check todr-todogroup-check mr-2"></i>
+                                                                <i data-todo-id="<?= $todo['id'] ?>" data-duedate="<?= $todo['dueDate'] ?>" data-todo-status="<?= $todo['complete'] ?>" data-toggle="tooltip" data-placement="top" title="Mark as complete" class="fas fa-check todr-todogroup-check mr-2 event-todo-status-toggle"></i>
                                                             <?php endif; ?>
                                                             <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo item" class="fas fa-edit todr-todogroup-edit mr-2"></i>
                                                             <i data-toggle="tooltip" data-placement="top" title="Delete todo item" data-todo-id="<?= $todo['id'] ?>" class="fas fa-trash todr-todogroup-delete event-todo-delete"></i>
@@ -310,14 +310,18 @@ if (!empty($_SESSION['successMessage'])) {
                 $.ajax({
                     type: 'POST',
                     url: '../php/todogroup/_deleteTodoGroup.php',
-                    data: { id: $(this).attr('data-todogroup-id') },
+                    data: {
+                        id: $(this).attr('data-todogroup-id')
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.success == true) {
                             displaySuccessToast(response.message);
-                            $parentToRemove.fadeOut(500, () => $parentToRemove.remove());
-                        }
-                        else {
+                            $parentToRemove.fadeOut(500, () => {
+                                $parentToRemove.remove();
+                                $('.tooltip').tooltip('hide');
+                            });
+                        } else {
                             displayErrorToastStandard(response.message);
                         }
                     }
@@ -341,9 +345,44 @@ if (!empty($_SESSION['successMessage'])) {
                                 if ($remainingTodos.length < 1) {
                                     $parentListGroup.replaceWith($('#templates #noTodosAlert').clone());
                                 }
+                                $('.tooltip').tooltip('hide');
                             });
                         }
                         else {
+                            displayErrorToastStandard(response.message);
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.event-todo-status-toggle', function() {
+                const $parentToUpdate = $(this).closest('li.list-group-item');
+                $.ajax({
+                    type: 'POST',
+                    url: '../php/todos/_toggleTodoStatus.php',
+                    data: {
+                        id: $(this).attr('data-todo-id'),
+                        status: $(this).attr('data-todo-status')
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success == true) {
+                            displaySuccessToast(response.message);
+                            const $changeButton = $parentToUpdate.find('i.event-todo-status-toggle');
+                            $changeButton.attr('data-todo-status', response.status);
+                            if (response.status == true) {
+                                $changeButton.removeClass('todr-todogroup-check fa-check').addClass('todr-todogroup-delete fa-times');
+                                $parentToUpdate.find('.badge.badge-danger').fadeOut(500, () => $parentToUpdate.find('.badge.badge-danger').remove());
+                            }
+                            else {
+                                $changeButton.removeClass('todr-todogroup-delete fa-times').addClass('todr-todogroup-check fa-check');
+                                let dueDate = new Date($changeButton.attr('data-duedate'));
+                                
+                                if (dueDate < new Date()) {
+                                    $parentToUpdate.find('div.col-12 div.d-flex span.mr-auto').append('<span class="badge badge-danger">Overdue</span>');
+                                }
+                            }
+                        } else {
                             displayErrorToastStandard(response.message);
                         }
                     }
