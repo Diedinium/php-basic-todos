@@ -367,15 +367,17 @@ if (!empty($_SESSION['successMessage'])) {
                     dataType: 'json',
                     success: function(response) {
                         if (response.success == true) {
-                            displaySuccessToast(response.message);
                             const $changeButton = $parentToUpdate.find('i.event-todo-status-toggle');
                             $changeButton.attr('data-todo-status', response.status);
                             if (response.status == true) {
-                                $changeButton.removeClass('todr-todogroup-check fa-check').addClass('todr-todogroup-delete fa-times');
+                                // Note that this is using the undocumented _fixTitle function of the tooltip, could break with future updates!
+                                $changeButton.removeClass('todr-todogroup-check fa-check').addClass('todr-todogroup-delete fa-times').attr('title', 'Mark as incomplete').tooltip('_fixTitle');
                                 $parentToUpdate.find('.badge.badge-danger').fadeOut(500, () => $parentToUpdate.find('.badge.badge-danger').remove());
+                                $parentToUpdate.find('div strong span').first().removeClass('badge-warning').addClass('badge-success').html('Complete');
                             }
                             else {
-                                $changeButton.removeClass('todr-todogroup-delete fa-times').addClass('todr-todogroup-check fa-check');
+                                $changeButton.removeClass('todr-todogroup-delete fa-times').addClass('todr-todogroup-check fa-check').attr('title', 'Mark as complete').tooltip('_fixTitle');
+                                $parentToUpdate.find('div strong span').first().removeClass('badge-success').addClass('badge-warning').html('In Progress');
                                 let dueDate = new Date($changeButton.attr('data-duedate'));
                                 
                                 if (dueDate < new Date()) {
