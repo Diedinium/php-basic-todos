@@ -86,7 +86,7 @@ $connection->close();
                         </h4>
                         <div class="card-body">
                             <p>To start making todo lists, create an account using the button below.</p>
-                            <a href="pages/account/createAccount.php" class="btn todr-brand-colour-bg text-white">Create Account</a>
+                            <a href="pages/createAccount.php" class="btn todr-brand-colour-bg text-white">Create Account</a>
                         </div>
                     </div>
                 </div>
