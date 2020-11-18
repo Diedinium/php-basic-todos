@@ -14,6 +14,19 @@ class TodoManager
         }
     }
 
+    public function updateTodoGroup(int $idTodoGroup, int $idUser, string $header) 
+    {
+        global $connection;
+
+        $updateTodoGroup = $connection->prepare("UPDATE t_todogroup SET header = ? WHERE id = ? AND iduser = ?");
+        $updateTodoGroup->bind_param("sii", $header, $idTodoGroup, $idUser);
+        $updateTodoGroup->execute();
+
+        if (!empty($updateTodoGroup->error)) {
+            throw new Exception("Failed to update header.");
+        }
+    }
+
     public function deleteTodo(int $idTodo, int $idUser) {
         global $connection;
 

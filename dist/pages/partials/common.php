@@ -37,6 +37,19 @@
     </div>
 
     <div class="alert alert-info" id="noTodosAlert">This todo group does not yet contain any todos.</div>
+
+    <form class="d-flex todr-form-edit-todogroup">
+        <div class="form-label-group mr-auto w-100">
+            <input type="text" name="header" class="form-control" placeholder="Enter header...">
+            <label for="header">Header</label>
+        </div>
+        <span class="todr-todogroup-actions">
+            <input type="hidden" name="id" value="">
+            <button type="submit" class="d-none"></button>
+            <i data-toggle="tooltip" data-placement="top" title="Save Changes" class="fas fa-save fa-lg todr-todogroup-check mr-2 event-todogroup-saveChanges"></i>
+            <i data-toggle="tooltip" data-placement="top" title="Cancel" class="fas fa-times fa-lg todr-todogroup-delete event-todogroup-cancelEdit"></i>
+        </span>
+    </form>
 </div>
 
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog">

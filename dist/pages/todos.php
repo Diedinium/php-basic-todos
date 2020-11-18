@@ -184,6 +184,61 @@ if (!empty($_SESSION['successMessage'])) {
                             </div>
                         </div>
                     <?php endforeach; ?>
+                    <div class="card mt-2 todr-subtle-shadow bg-white">
+                        <div class="card-body p-3">
+                            <form class="d-flex todr-form-edit-todogroup">
+                                <div class="form-label-group mr-auto w-100">
+                                    <input type="text" name="header" class="form-control" placeholder="Enter header...">
+                                    <label for="header">Header</label>
+                                </div>
+                                <span class="todr-todogroup-actions">
+                                    <input type="hidden" name="id" value="19">
+                                    <button type="submit" class="d-none"></button>
+                                    <i data-toggle="tooltip" data-placement="top" title="Save Changes" class="fas fa-save fa-lg todr-todogroup-check mr-2 event-todogroup-saveChanges"></i>
+                                    <i data-toggle="tooltip" data-placement="top" title="Cancel" class="fas fa-times fa-lg todr-todogroup-delete event-todogroup-cancelEdit"></i>
+                                </span>
+                            </form>
+                            <!-- <h4 class="card-title d-flex">
+                                <span class="mr-auto">Test header here</span>
+                                <span class="todr-todogroup-actions">
+                                    <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo group" class="fas fa-edit fa-sm todr-todogroup-edit mr-2"></i>
+                                    <i data-toggle="tooltip" data-placement="top" title="Delete todo group" data-todogroup-id="72" class="fas fa-trash fa-sm todr-todogroup-delete event-todogroup-delete"></i>
+                                </span>
+                            </h4> -->
+                            <div>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item p-2">
+                                        <div class="row no-gutters">
+                                            <div class="col-9 col-md-11 pb-1">
+                                                <strong>Test that is complete with overdue<span class="badge badge-success">Complete</span></strong>
+                                            </div>
+                                            <div class="col-3 col-md-1 text-right pb-1">
+                                                <i data-todo-id="60" data-duedate="2020-12-15 15:35:25" data-todo-status="1" data-toggle="tooltip" data-placement="top" title="Mark as incomplete" class="fas fa-times todr-todogroup-delete mr-2 event-todo-status-toggle"></i>
+                                                <i onclick="alert('Not yet implemented')" data-toggle="tooltip" data-placement="top" title="Edit todo item" class="fas fa-edit todr-todogroup-edit mr-2"></i>
+                                                <i data-toggle="tooltip" data-placement="top" title="Delete todo item" data-todo-id="60" class="fas fa-trash todr-todogroup-delete event-todo-delete"></i>
+                                            </div>
+                                            <div class="col-12 pb-1">
+                                                Test description for todo here...
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="d-flex">
+                                                    <span class="mr-auto">
+                                                        <i class="fas fa-clock"></i>
+                                                        <span class="text-muted">
+                                                            2020/12/15 15:35 PM
+                                                        </span>
+                                                        <span class="badge badge-danger">Overdue</span>
+                                                    </span>
+                                                    <span><i class="fas fa-info-circle todr-todogroup-edit" data-toggle="tooltip" data-placement="top" title="Created: 2020/11/15 11:35 AM"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <a href="#" class="btn btn-secondary" onclick="openAddTodoModal(<?= $todoGroupID ?>)"><i class="fas fa-plus-circle"></i> Add Todo</a>
+                            </div>
+                        </div>
+                    </div>
                 <?php else : ?>
                     <div class="card mt-2 todr-subtle-shadow bg-white">
                         <div class="card-body p-3">
@@ -299,6 +354,20 @@ if (!empty($_SESSION['successMessage'])) {
                 errorElement: 'small'
             });
 
+            // $('.todr-form-edit-todogroup').each(function() {
+            //     console.log($(this));
+            //     $(this).validate({
+            //         rules: {
+            //             todogroupHeader: {
+            //                 maxlength: 250,
+            //                 required: true,
+            //                 noWhiteSpace: true
+            //             }
+            //         },
+            //         errorElement: 'small'
+            //     });
+            // });
+
             $('[data-toggle="tooltip"]').tooltip();
 
             $('input, select').focusout(function() {
@@ -334,7 +403,9 @@ if (!empty($_SESSION['successMessage'])) {
                 $.ajax({
                     type: 'POST',
                     url: '../php/todos/_deleteTodo.php',
-                    data: { id: $(this).attr('data-todo-id') },
+                    data: {
+                        id: $(this).attr('data-todo-id')
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.success == true) {
@@ -347,8 +418,7 @@ if (!empty($_SESSION['successMessage'])) {
                                 }
                                 $('.tooltip').tooltip('hide');
                             });
-                        }
-                        else {
+                        } else {
                             displayErrorToastStandard(response.message);
                         }
                     }
@@ -374,16 +444,37 @@ if (!empty($_SESSION['successMessage'])) {
                                 $changeButton.removeClass('todr-todogroup-check fa-check').addClass('todr-todogroup-delete fa-times').attr('title', 'Mark as incomplete').tooltip('_fixTitle');
                                 $parentToUpdate.find('.badge.badge-danger').fadeOut(500, () => $parentToUpdate.find('.badge.badge-danger').remove());
                                 $parentToUpdate.find('div strong span').first().removeClass('badge-warning').addClass('badge-success').html('Complete');
-                            }
-                            else {
+                            } else {
                                 $changeButton.removeClass('todr-todogroup-delete fa-times').addClass('todr-todogroup-check fa-check').attr('title', 'Mark as complete').tooltip('_fixTitle');
                                 $parentToUpdate.find('div strong span').first().removeClass('badge-success').addClass('badge-warning').html('In Progress');
                                 let dueDate = new Date($changeButton.attr('data-duedate'));
-                                
+
                                 if (dueDate < new Date()) {
                                     $parentToUpdate.find('div.col-12 div.d-flex span.mr-auto').append('<span class="badge badge-danger">Overdue</span>');
                                 }
                             }
+                        } else {
+                            displayErrorToastStandard(response.message);
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.event-todogroup-saveChanges', function() {
+                $(this).closest('form').submit();
+            });
+
+            $(document).on('submit', '.todr-form-edit-todogroup', function(e) {
+                e.preventDefault();
+                const $form = $(this);
+                $.ajax({
+                    type: 'POST',
+                    url: '../php/todogroup/_editTodoGroup.php',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success == true) {
+                            displaySuccessToast(response.message);
                         } else {
                             displayErrorToastStandard(response.message);
                         }
